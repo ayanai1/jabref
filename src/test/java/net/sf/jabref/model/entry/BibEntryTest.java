@@ -26,4 +26,14 @@ public class BibEntryTest {
     public void notClearReservedFields() {
         entry.clearField(BibEntry.ID_FIELD);
     }
+
+    @Test
+    public void hideOptionalFieldTest() {
+        //TODO
+    }
+
+    @Test
+    public void hideAllOptionalFieldTest() {
+        //TODO
+    }
 }
