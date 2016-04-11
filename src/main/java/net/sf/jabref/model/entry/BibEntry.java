@@ -24,16 +24,7 @@ import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -320,6 +311,7 @@ public class BibEntry {
         this.fields.putAll(fields);
     }
 
+
     /**
      * Set a field, and notify listeners about the change.
      *
@@ -374,6 +366,55 @@ public class BibEntry {
             firePropertyChangedEvent(fieldName, oldValue, null);
         } catch (PropertyVetoException pve) {
             throw new IllegalArgumentException("Change rejected: " + pve);
+        }
+
+    }
+
+    /**
+     * Hide single chosen optional Field
+     * @param name field name has to be checked
+     */
+    public void hideOptionalField(String name){
+        String fieldName = normalizeFieldName(name);
+        //Set<String> allFields  = getFieldNames();
+        EntryType currentType = null;
+
+        for (EntryType et : BibtexEntryTypes.ALL) {
+            if (et.getName().equals(this.getType())) {
+                currentType = et;
+            }
+        }
+
+        List<String> optionalFields = currentType.getOptionalFields();
+
+        for (String s : optionalFields) {
+            if (s.equals(fieldName)) {
+                String value = fields.get(s);
+                fields.remove(s);
+                fields.put(s+ "_", value);
+            }
+        }
+
+    }
+
+    /**
+     * Hide all optional Fields
+     */
+    public void hideAllOptionalFields(){
+        EntryType currentType = null;
+
+        for (EntryType et : BibtexEntryTypes.ALL) {
+            if(et.getName().equals(this.getType()){
+                currentType = et;
+            }
+        }
+        List<String> optionalFields = currentType.getOptionalFields();
+
+        for (String field : optionalFields){
+            String value = fields.get(field);
+            fields.remove(field);
+            fields.put(field+ "_", value);
+
         }
 
     }
