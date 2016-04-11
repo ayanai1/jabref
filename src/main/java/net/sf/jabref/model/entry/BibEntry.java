@@ -416,7 +416,7 @@ public class BibEntry {
 
         }
     }
-    
+
     private EntryType getCurrentType(){
         EntryType currentType = null;
 
