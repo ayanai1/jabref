@@ -377,13 +377,13 @@ public class BibEntry {
     public void hideOptionalField(String name){
         String fieldName = normalizeFieldName(name);
         //Set<String> allFields  = getFieldNames();
-        EntryType currentType = null;
+        EntryType currentType = this.getCurrentType();
 
-        for (EntryType et : BibtexEntryTypes.ALL) {
-            if (et.getName().equals(this.getType())) {
-                currentType = et;
-            }
-        }
+//           for (EntryType et : BibtexEntryTypes.ALL) {
+//            if (et.getName().equals(this.getType())) {
+//                currentType = et;
+//            }
+//        }
 
         List<String> optionalFields = currentType.getOptionalFields();
 
@@ -394,20 +394,19 @@ public class BibEntry {
                 fields.put(s+ "_", value);
             }
         }
-
     }
 
     /**
      * Hide all optional Fields
      */
     public void hideAllOptionalFields(){
-        EntryType currentType = null;
+        EntryType currentType = this.getCurrentType();
 
-        for (EntryType et : BibtexEntryTypes.ALL) {
-            if(et.getName().equals(this.getType()){
-                currentType = et;
-            }
-        }
+//        for (EntryType et : BibtexEntryTypes.ALL) {
+//            if(et.getName().equals(this.getType())){
+//                currentType = et;
+//            }
+//        }
         List<String> optionalFields = currentType.getOptionalFields();
 
         for (String field : optionalFields){
@@ -416,7 +415,17 @@ public class BibEntry {
             fields.put(field+ "_", value);
 
         }
+    }
+    
+    private EntryType getCurrentType(){
+        EntryType currentType = null;
 
+        for (EntryType et : BibtexEntryTypes.ALL) {
+            if (et.getName().equals(this.getType())) {
+            currentType = et;
+            }
+        }
+        return currentType;
     }
 
     /**
