@@ -375,6 +375,7 @@ public class BibEntry {
      * @param name field name has to be checked
      */
     public void hideOptionalField(String name){
+        boolean hidden = false;
         String fieldName = normalizeFieldName(name);
         //Set<String> allFields  = getFieldNames();
         EntryType currentType = this.getCurrentType();
@@ -388,10 +389,17 @@ public class BibEntry {
         List<String> optionalFields = currentType.getOptionalFields();
 
         for (String s : optionalFields) {
-            if (s.equals(fieldName)) {
-                String value = fields.get(s);
-                fields.remove(s);
-                fields.put(s+ "_", value);
+            if(hidden = false) {
+
+                if (s.equals(fieldName)) {
+                    String value = fields.get(s);
+                    fields.remove(s);
+                    fields.put(s + "_", value);
+                }
+                hidden = true;
+            }else {
+                System.out.println("field is already hidden");
+                }
             }
         }
     }
