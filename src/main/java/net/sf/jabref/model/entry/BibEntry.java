@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import net.sf.jabref.event.FieldChangedEvent;
 import net.sf.jabref.model.database.BibDatabase;
@@ -374,6 +375,48 @@ public class BibEntry implements Cloneable {
         }
         fields.remove(fieldName);
         eventBus.post(new FieldChangedEvent(this, fieldName, null));
+    }
+
+    private String normalizeFieldName(String fieldName) {
+        Objects.requireNonNull(fieldName, "field name must not be null");
+
+        return fieldName.toLowerCase(Locale.ENGLISH);
+    }
+
+    /**
+     * Hide single chosen optional Field
+     * @param name field name has to be checked
+     */
+    public void toggleOptionalFieldVisibility(String name) {
+        boolean hidden = Pattern.matches("^_.*", name);
+        String fieldName = normalizeFieldName(name);
+        EntryType currentType = this.getCurrentType();
+
+        List<String> optionalFields = currentType.getOptionalFields();
+
+        for (String s : optionalFields) {
+            String value = fields.get(s);
+            if (s.equals(fieldName)) {
+                if (!hidden) {
+                    fields.remove(s);
+                    fields.put("_" + s, value);
+                } else {
+                    fields.remove(s);
+                    fields.put(s.substring(1, s.length() - 1), value);
+                }
+            }
+        }
+    }
+
+    private EntryType getCurrentType() {
+        EntryType currentType = null;
+
+        for (EntryType et : BibtexEntryTypes.ALL) {
+            if (et.getName().equals(this.getType())) {
+                currentType = et;
+            }
+        }
+        return currentType;
     }
 
     /**
