@@ -4,24 +4,29 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.text.JTextComponent;
-
+import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.logic.l10n.Localization;
 
 
 public class HideUnhideAction extends AbstractAction {
-    private final JTextComponent field;
+
+    private FieldEditor fieldEditor;
 
 
-    public HideUnhideAction(JTextComponent field) {
-        this.field = field;
+    public HideUnhideAction(FieldEditor fieldEditor) {
+        this.fieldEditor = fieldEditor;
         putValue(Action.NAME, Localization.lang("Hide/Unhide Field"));
         putValue(Action.SHORT_DESCRIPTION, Localization.lang("Hide/Unhide Field"));
     }
+
+    public void setFieldEditor(FieldEditor fieldEditor) {
+        this.fieldEditor = fieldEditor;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-
+        System.out.println("! " + fieldEditor.getFieldName());
+        System.out.println(fieldEditor.getEntryEditorTab().getBibEntry().toString());
     }
 
 }

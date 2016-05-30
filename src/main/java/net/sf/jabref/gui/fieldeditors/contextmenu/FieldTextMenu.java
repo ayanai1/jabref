@@ -23,7 +23,7 @@ public class FieldTextMenu implements MouseListener {
     private final JPopupMenu inputMenu = new JPopupMenu();
     private final CopyAction copyAction;
     private final PasteAction pasteAction;
-    private final HideUnhideAction hideAction;
+    private final HideUnhideAction hideunhideAction;
 
     private static final int MAX_PASTE_PREVIEW_LENGTH = 20;
 
@@ -32,7 +32,7 @@ public class FieldTextMenu implements MouseListener {
         field = fieldComponent;
         copyAction = new CopyAction((JTextComponent) field);
         pasteAction = new PasteAction((JTextComponent) field);
-        hideAction = new HideUnhideAction((JTextComponent) field);
+        hideunhideAction = new HideUnhideAction(field);
         initMenu();
     }
 
@@ -86,6 +86,11 @@ public class FieldTextMenu implements MouseListener {
             }
             pasteAction.setEnabled(pasteStatus);
             inputMenu.show(e.getComponent(), e.getX(), e.getY());
+
+            //TODO check if null etc..
+            hideunhideAction.setFieldEditor(field);
+
+
         }
     }
 
@@ -93,13 +98,13 @@ public class FieldTextMenu implements MouseListener {
         inputMenu.add(pasteAction);
         inputMenu.add(copyAction);
         inputMenu.addSeparator();
+        inputMenu.add(hideunhideAction);
         inputMenu.add(new ReplaceAction());
 
         if (field.getTextComponent() instanceof JTextComponent) {
             inputMenu.add(new CaseChangeMenu((JTextComponent) field.getTextComponent()));
             inputMenu.add(new ConversionMenu((JTextComponent) field.getTextComponent()));
         }
-        inputMenu.add(hideAction);
     }
 
     @SuppressWarnings("serial")
