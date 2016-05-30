@@ -11,6 +11,7 @@ import javax.swing.text.JTextComponent;
 
 import net.sf.jabref.gui.ClipBoardManager;
 import net.sf.jabref.gui.actions.CopyAction;
+import net.sf.jabref.gui.actions.HideUnhideAction;
 import net.sf.jabref.gui.actions.PasteAction;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.logic.formatter.bibtexfields.NormalizeNamesFormatter;
@@ -22,6 +23,7 @@ public class FieldTextMenu implements MouseListener {
     private final JPopupMenu inputMenu = new JPopupMenu();
     private final CopyAction copyAction;
     private final PasteAction pasteAction;
+    private final HideUnhideAction hideAction;
 
     private static final int MAX_PASTE_PREVIEW_LENGTH = 20;
 
@@ -30,6 +32,7 @@ public class FieldTextMenu implements MouseListener {
         field = fieldComponent;
         copyAction = new CopyAction((JTextComponent) field);
         pasteAction = new PasteAction((JTextComponent) field);
+        hideAction = new HideUnhideAction((JTextComponent) field);
         initMenu();
     }
 
@@ -96,6 +99,7 @@ public class FieldTextMenu implements MouseListener {
             inputMenu.add(new CaseChangeMenu((JTextComponent) field.getTextComponent()));
             inputMenu.add(new ConversionMenu((JTextComponent) field.getTextComponent()));
         }
+        inputMenu.add(hideAction);
     }
 
     @SuppressWarnings("serial")

@@ -387,7 +387,7 @@ public class BibEntry implements Cloneable {
      * Hide single chosen optional Field
      * @param name field name has to be checked
      */
-    public void toggleOptionalFieldVisibility(String name) {
+    public void hideOptionalField(String name) {
         boolean hidden = Pattern.matches("^_.*", name);
         String fieldName = normalizeFieldName(name);
         EntryType currentType = this.getCurrentType();
