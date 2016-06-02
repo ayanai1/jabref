@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import net.sf.jabref.event.FieldChangedEvent;
 import net.sf.jabref.model.database.BibDatabase;
@@ -42,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class BibEntry implements Cloneable {
+
     private static final Log LOGGER = LogFactory.getLog(BibEntry.class);
 
     public static final String TYPE_HEADER = "entrytype";
@@ -65,7 +65,6 @@ public class BibEntry implements Cloneable {
      * Is set to false, if parts of the entry change. This causes the entry to be serialized based on the internal state (and not based on the old serialization)
      */
     private boolean changed;
-
 
     private final EventBus eventBus = new EventBus();
 
@@ -387,36 +386,16 @@ public class BibEntry implements Cloneable {
      * Hide single chosen optional Field
      * @param name field name has to be checked
      */
-    public void hideOptionalField(String name) {
-        boolean hidden = Pattern.matches("^_.*", name);
-        String fieldName = normalizeFieldName(name);
-        EntryType currentType = this.getCurrentType();
 
-        List<String> optionalFields = currentType.getOptionalFields();
+    public void toggleFieldConcealment(String name) {
 
-        for (String s : optionalFields) {
-            String value = fields.get(s);
-            if (s.equals(fieldName)) {
-                if (!hidden) {
-                    fields.remove(s);
-                    fields.put("_" + s, value);
-                } else {
-                    fields.remove(s);
-                    fields.put(s.substring(1, s.length() - 1), value);
-                }
-            }
+        if (fields.containsKey(name)) {
+            fields.put("_" + name, fields.get(name));
+            fields.remove(name);
+        } else if (fields.containsKey("_" + name)) {
+            fields.put(name, fields.get("_" + name));
+            fields.remove("_" + name);
         }
-    }
-
-    private EntryType getCurrentType() {
-        EntryType currentType = null;
-
-        for (EntryType et : BibtexEntryTypes.ALL) {
-            if (et.getName().equals(this.getType())) {
-                currentType = et;
-            }
-        }
-        return currentType;
     }
 
     /**
@@ -536,7 +515,6 @@ public class BibEntry implements Cloneable {
         }
         return year;
     }
-
 
     public void setParsedSerialization(String parsedSerialization) {
         changed = false;

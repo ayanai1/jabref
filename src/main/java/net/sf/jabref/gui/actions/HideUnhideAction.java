@@ -25,6 +25,7 @@ public class HideUnhideAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        fieldEditor.getEntryEditorTab().getBibEntry().toggleFieldConcealment(fieldEditor.getFieldName());
         System.out.println("! " + fieldEditor.getFieldName());
         System.out.println(fieldEditor.getEntryEditorTab().getBibEntry().toString());
     }
