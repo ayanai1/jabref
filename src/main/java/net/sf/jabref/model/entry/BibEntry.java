@@ -377,6 +377,21 @@ public class BibEntry implements Cloneable {
     }
 
     /**
+     * Hide single chosen optional Field
+     * @param name field name has to be checked
+     */
+
+    public void toggleFieldConcealment(String name) {
+        if (fields.containsKey(name)) {
+            fields.put("_" + name, fields.get(name));
+            fields.remove(name);
+        } else if (fields.containsKey("_" + name)) {
+            fields.put(name, fields.get("_" + name));
+            fields.remove("_" + name);
+        }
+    }
+
+    /**
      * Determines whether this entry has all the given fields present. If a non-null
      * database argument is given, this method will try to look up missing fields in
      * entries linked by the "crossref" field, if any.

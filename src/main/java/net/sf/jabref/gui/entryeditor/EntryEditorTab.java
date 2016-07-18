@@ -45,6 +45,7 @@ import net.sf.jabref.gui.JabRefFrame;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.gui.fieldeditors.FileListEditor;
+import net.sf.jabref.gui.fieldeditors.HiddenTextArea;
 import net.sf.jabref.gui.fieldeditors.TextArea;
 import net.sf.jabref.gui.fieldeditors.TextField;
 import net.sf.jabref.gui.keyboard.KeyBinding;
@@ -60,12 +61,12 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A single tab displayed in the EntryEditor holding several FieldEditors.
  */
-class EntryEditorTab {
+public class EntryEditorTab {
 
     private final JPanel panel = new JPanel();
 
-    private final JScrollPane scrollPane = new JScrollPane(panel,
-            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    private final JScrollPane scrollPane = new JScrollPane(panel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
     private final List<String> fields;
 
@@ -113,8 +114,8 @@ class EntryEditorTab {
         scrollPane.setFocusCycleRoot(true);
     }
 
-    private void setupPanel(JabRefFrame frame, BasePanel bPanel, boolean addKeyField,
-                            boolean compressed, String title) {
+    private void setupPanel(JabRefFrame frame, BasePanel bPanel, boolean addKeyField, boolean compressed,
+            String title) {
 
         setupKeyBindings(panel.getInputMap(JComponent.WHEN_FOCUSED), panel.getActionMap());
 
@@ -126,8 +127,7 @@ class EntryEditorTab {
         int fieldsPerRow = compressed ? 2 : 1;
 
         String colSpec = compressed ? "fill:pref, 1dlu, fill:10dlu:grow, 1dlu, fill:pref, "
-                + "8dlu, fill:pref, 1dlu, fill:10dlu:grow, 1dlu, fill:pref"
-                : "fill:pref, 1dlu, fill:pref:grow, 1dlu, fill:pref";
+                + "8dlu, fill:pref, 1dlu, fill:10dlu:grow, 1dlu, fill:pref" : "fill:pref, 1dlu, fill:pref:grow, 1dlu, fill:pref";
         StringBuilder stringBuilder = new StringBuilder();
         int rows = (int) Math.ceil((double) fields.size() / fieldsPerRow);
         for (int i = 0; i < rows; i++) {
@@ -140,8 +140,7 @@ class EntryEditorTab {
         }
         String rowSpec = stringBuilder.toString();
 
-        DefaultFormBuilder builder = new DefaultFormBuilder
-                (new FormLayout(colSpec, rowSpec), panel);
+        DefaultFormBuilder builder = new DefaultFormBuilder(new FormLayout(colSpec, rowSpec), panel);
 
         // BibTex edit fields are defined here
         for (int i = 0; i < fields.size(); i++) {
@@ -151,11 +150,16 @@ class EntryEditorTab {
             int defaultHeight;
             int wHeight = (int) (50.0 * InternalBibtexFields.getFieldWeight(field));
             if (InternalBibtexFields.getFieldExtras(field).contains(FieldProperties.FILE_EDITOR)) {
-                fieldEditor = new FileListEditor(frame, bPanel.getBibDatabaseContext(), field, null, parent);
+                fieldEditor = new FileListEditor(frame, bPanel.getBibDatabaseContext(), field, null, parent, this);
                 fileListEditor = (FileListEditor) fieldEditor;
                 defaultHeight = 0;
             } else {
-                fieldEditor = new TextArea(field, null);
+                if (field.startsWith("_")) {
+                    fieldEditor = new HiddenTextArea(field, null, this);
+                } else {
+                    fieldEditor = new TextArea(field, null, this);
+                }
+                fieldEditor.setEditors(editors);
                 bPanel.getSearchBar().getSearchQueryHighlightObservable().addSearchListener((TextArea) fieldEditor);
                 defaultHeight = fieldEditor.getPane().getPreferredSize().height;
             }
@@ -197,7 +201,7 @@ class EntryEditorTab {
 
         // Add the edit field for Bibtex-key.
         if (addKeyField) {
-            final TextField textField = new TextField(BibEntry.KEY_FIELD, parent.getEntry().getCiteKey(), true);
+            final TextField textField = new TextField(BibEntry.KEY_FIELD, parent.getEntry().getCiteKey(), true, this);
             setupJTextComponent(textField, null);
 
             editors.put(BibEntry.KEY_FIELD, textField);
@@ -213,7 +217,6 @@ class EntryEditorTab {
             builder.append(textField, 3);
         }
     }
-
 
     private BibEntry getEntry() {
         return entry;
@@ -283,8 +286,6 @@ class EntryEditorTab {
         setEntry(getEntry());
     }
 
-
-
     public void setEntry(BibEntry entry) {
         try {
             updating = true;
@@ -306,11 +307,11 @@ class EntryEditorTab {
         }
         FieldEditor fieldEditor = editors.get(field);
         // trying to preserve current edit position (fixes SF bug #1285)
-        if(fieldEditor.getTextComponent() instanceof JTextComponent) {
+        if (fieldEditor.getTextComponent() instanceof JTextComponent) {
             int initialCaretPosition = ((JTextComponent) fieldEditor).getCaretPosition();
             fieldEditor.setText(content);
             int textLength = fieldEditor.getText().length();
-            if(initialCaretPosition<textLength) {
+            if (initialCaretPosition < textLength) {
                 ((JTextComponent) fieldEditor).setCaretPosition(initialCaretPosition);
             } else {
                 ((JTextComponent) fieldEditor).setCaretPosition(textLength);
@@ -410,5 +411,17 @@ class EntryEditorTab {
         keys.clear();
         keys.add(KeyStroke.getKeyStroke("shift pressed TAB"));
         component.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, keys);
+    }
+
+    public BibEntry getBibEntry(){
+        return entry;
+    }
+
+    public void putTextArea(String name, TextArea textArea) {
+        editors.put(name, textArea);
+    }
+
+    public Map<String, FieldEditor> getEditors() {
+        return editors;
     }
 }

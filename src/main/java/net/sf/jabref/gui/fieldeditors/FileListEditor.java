@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.AbstractAction;
@@ -65,6 +66,7 @@ import net.sf.jabref.gui.actions.Actions;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
 import net.sf.jabref.gui.desktop.JabRefDesktop;
 import net.sf.jabref.gui.entryeditor.EntryEditor;
+import net.sf.jabref.gui.entryeditor.EntryEditorTab;
 import net.sf.jabref.gui.keyboard.KeyBinding;
 import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.io.FileUtil;
@@ -93,15 +95,17 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
     private final FileListTableModel tableModel;
     private final JButton auto;
     private final JPopupMenu menu = new JPopupMenu();
+    private final EntryEditorTab entryTab;
 
     public FileListEditor(JabRefFrame frame, BibDatabaseContext databaseContext, String fieldName, String content,
-                          EntryEditor entryEditor) {
+            EntryEditor entryEditor, EntryEditorTab entryTab) {
         this.frame = frame;
         this.databaseContext = databaseContext;
         this.fieldName = fieldName;
         this.entryEditor = entryEditor;
         label = new FieldNameLabel(" " + EntryUtil.capitalizeFirst(fieldName) + " ");
         tableModel = new FileListTableModel();
+        this.entryTab = entryTab;
         setText(content);
         setModel(tableModel);
         JScrollPane sPane = new JScrollPane(this);
@@ -575,5 +579,22 @@ public class FileListEditor extends JTable implements FieldEditor, DownloadExter
     @Override
     public void updateFontColor() {
         // Do nothing
+    }
+
+    @Override
+    public EntryEditorTab getEntryEditorTab() {
+        return this.entryTab;
+    }
+
+    @Override
+    public void setEditors(Map<String, FieldEditor> editors) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Map<String, FieldEditor> getEditors() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

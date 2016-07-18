@@ -11,6 +11,7 @@ import javax.swing.text.JTextComponent;
 
 import net.sf.jabref.gui.ClipBoardManager;
 import net.sf.jabref.gui.actions.CopyAction;
+import net.sf.jabref.gui.actions.HideAction;
 import net.sf.jabref.gui.actions.PasteAction;
 import net.sf.jabref.gui.fieldeditors.FieldEditor;
 import net.sf.jabref.logic.formatter.bibtexfields.NormalizeNamesFormatter;
@@ -18,18 +19,20 @@ import net.sf.jabref.logic.l10n.Localization;
 import net.sf.jabref.logic.util.strings.StringUtil;
 
 public class FieldTextMenu implements MouseListener {
-    private final FieldEditor field;
+    private final FieldEditor fieldEditor;
     private final JPopupMenu inputMenu = new JPopupMenu();
     private final CopyAction copyAction;
     private final PasteAction pasteAction;
+    private final HideAction hideAction;
 
     private static final int MAX_PASTE_PREVIEW_LENGTH = 20;
 
 
-    public FieldTextMenu(FieldEditor fieldComponent) {
-        field = fieldComponent;
-        copyAction = new CopyAction((JTextComponent) field);
-        pasteAction = new PasteAction((JTextComponent) field);
+    public FieldTextMenu(FieldEditor fieldEditor) {
+        this.fieldEditor = fieldEditor;
+        this.copyAction = new CopyAction((JTextComponent) fieldEditor);
+        this.pasteAction = new PasteAction((JTextComponent) fieldEditor);
+        this.hideAction = new HideAction(fieldEditor);
         initMenu();
     }
 
@@ -59,12 +62,12 @@ public class FieldTextMenu implements MouseListener {
     }
 
     private void maybeShowPopup(MouseEvent e) {
-        if (e.isPopupTrigger() && (field != null)) {
-            field.requestFocus();
+        if (e.isPopupTrigger() && (fieldEditor != null)) {
+            fieldEditor.requestFocus();
 
             // enable/disable copy to clipboard if selected text available
-            String txt = field.getSelectedText();
-            String allTxt = field.getText();
+            String txt = fieldEditor.getSelectedText();
+            String allTxt = fieldEditor.getText();
             boolean copyStatus = false;
             if (((txt != null) && (!txt.isEmpty())) || ((allTxt != null) && !allTxt.isEmpty())) {
                 copyStatus = true;
@@ -83,18 +86,21 @@ public class FieldTextMenu implements MouseListener {
             }
             pasteAction.setEnabled(pasteStatus);
             inputMenu.show(e.getComponent(), e.getX(), e.getY());
+
+            hideAction.setFieldEditor(fieldEditor);
         }
     }
 
     private void initMenu() {
         inputMenu.add(pasteAction);
         inputMenu.add(copyAction);
+        inputMenu.add(hideAction);
         inputMenu.addSeparator();
         inputMenu.add(new ReplaceAction());
 
-        if (field.getTextComponent() instanceof JTextComponent) {
-            inputMenu.add(new CaseChangeMenu((JTextComponent) field.getTextComponent()));
-            inputMenu.add(new ConversionMenu((JTextComponent) field.getTextComponent()));
+        if (fieldEditor.getTextComponent() instanceof JTextComponent) {
+            inputMenu.add(new CaseChangeMenu((JTextComponent) fieldEditor.getTextComponent()));
+            inputMenu.add(new ConversionMenu((JTextComponent) fieldEditor.getTextComponent()));
         }
     }
 
@@ -107,11 +113,11 @@ public class FieldTextMenu implements MouseListener {
 
         @Override
         public void actionPerformed(ActionEvent evt) {
-            if (field.getText().isEmpty()) {
+            if (fieldEditor.getText().isEmpty()) {
                 return;
             }
-            String input = field.getText();
-            field.setText(new NormalizeNamesFormatter().format(input));
+            String input = fieldEditor.getText();
+            fieldEditor.setText(new NormalizeNamesFormatter().format(input));
         }
     }
 }

@@ -17,6 +17,7 @@ package net.sf.jabref.gui.fieldeditors;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -26,6 +27,7 @@ import javax.swing.ScrollPaneConstants;
 import net.sf.jabref.Globals;
 import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
+import net.sf.jabref.gui.entryeditor.EntryEditorTab;
 import net.sf.jabref.gui.fieldeditors.contextmenu.FieldTextMenu;
 import net.sf.jabref.model.entry.EntryUtil;
 
@@ -37,14 +39,18 @@ public class TextArea extends JTextAreaWithHighlighting implements FieldEditor {
 
     private final JScrollPane scrollPane;
 
-    private final FieldNameLabel label;
+    protected final FieldNameLabel label;
 
-    private String fieldName;
+    protected String fieldName;
 
     private AutoCompleteListener autoCompleteListener;
 
+    private final EntryEditorTab entryTab;
 
-    public TextArea(String fieldName, String content) {
+    private Map<String, FieldEditor> editors;
+
+
+    public TextArea(String fieldName, String content, EntryEditorTab entryTab) {
         super(content);
 
 
@@ -70,6 +76,7 @@ public class TextArea extends JTextAreaWithHighlighting implements FieldEditor {
         FieldTextMenu popMenu = new FieldTextMenu(this);
         this.addMouseListener(popMenu);
         label.addMouseListener(popMenu);
+        this.entryTab = entryTab;
     }
 
     @Override
@@ -156,5 +163,20 @@ public class TextArea extends JTextAreaWithHighlighting implements FieldEditor {
         if (autoCompleteListener != null) {
             autoCompleteListener.clearCurrentSuggestion(this);
         }
+    }
+
+    @Override
+    public EntryEditorTab getEntryEditorTab() {
+        return this.entryTab;
+    }
+
+    @Override
+    public void setEditors(Map<String, FieldEditor> editors) {
+        this.editors = editors;
+    }
+
+    @Override
+    public Map<String, FieldEditor> getEditors() {
+        return this.editors;
     }
 }

@@ -17,6 +17,7 @@ package net.sf.jabref.gui.fieldeditors;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -32,6 +33,7 @@ import net.sf.jabref.gui.GUIGlobals;
 import net.sf.jabref.gui.actions.Actions;
 import net.sf.jabref.gui.actions.PasteAction;
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
+import net.sf.jabref.gui.entryeditor.EntryEditorTab;
 import net.sf.jabref.gui.fieldeditors.contextmenu.FieldTextMenu;
 import net.sf.jabref.model.entry.EntryUtil;
 
@@ -45,9 +47,10 @@ public class TextField extends JTextField implements FieldEditor {
     private final JLabel label;
     private UndoManager undo;
     private AutoCompleteListener autoCompleteListener;
+    private final EntryEditorTab entryTab;
 
 
-    public TextField(String fieldName, String content, boolean changeColorOnFocus) {
+    public TextField(String fieldName, String content, boolean changeColorOnFocus, EntryEditorTab entryTab) {
         super(content);
 
         setupPasteListener();
@@ -70,6 +73,7 @@ public class TextField extends JTextField implements FieldEditor {
         FieldTextMenu popMenu = new FieldTextMenu(this);
         this.addMouseListener(popMenu);
         label.addMouseListener(popMenu);
+        this.entryTab = entryTab;
     }
 
     @Override
@@ -214,5 +218,22 @@ public class TextField extends JTextField implements FieldEditor {
 
         // Bind the redo action to ctl-Y
         getInputMap().put(Globals.getKeyPrefs().getKey(net.sf.jabref.gui.keyboard.KeyBinding.REDO), "Redo");
+    }
+
+    @Override
+    public void setEditors(Map<String, FieldEditor> editors) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public EntryEditorTab getEntryEditorTab() {
+        return this.entryTab;
+    }
+
+    @Override
+    public Map<String, FieldEditor> getEditors() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

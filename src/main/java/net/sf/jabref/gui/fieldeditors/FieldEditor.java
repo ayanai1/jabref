@@ -17,11 +17,13 @@ package net.sf.jabref.gui.fieldeditors;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import net.sf.jabref.gui.autocompleter.AutoCompleteListener;
+import net.sf.jabref.gui.entryeditor.EntryEditorTab;
 
 /**
  * FieldEditors is a common interface between the TextField and TextArea.
@@ -94,5 +96,11 @@ public interface FieldEditor {
 
     void setAutoCompleteListener(AutoCompleteListener listener);
 
+    EntryEditorTab getEntryEditorTab();
+
     void clearAutoCompleteSuggestion();
+
+    void setEditors(Map<String, FieldEditor> editors);
+
+    Map<String, FieldEditor> getEditors();
 }
